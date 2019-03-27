@@ -231,3 +231,8 @@ ol{
 .et_pb_ca_github.et_pb_module ul li {
     list-style-type: none;
 }
+
+/* CA.gov Template/Divi Button Module Fix */
+.main-content a.et_pb_button{
+  background-image: none;
+}
