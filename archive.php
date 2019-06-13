@@ -1,5 +1,6 @@
 <?php
 		get_header();
+
 ?>
 <body <?php body_class('primary') ?>  >
 <?php get_template_part('partials/content', 'header') ?>
@@ -17,10 +18,10 @@
 
 			if (have_posts()) :
 				while (have_posts()) : the_post();
-					$post_format = et_pb_post_format(); ?>
-
+					$post_format = et_pb_post_format();
+					?>
 					<article id="post-<?php the_ID(); ?>" <?php post_class('et_pb_post'); ?>>
-						<a class="cat-link no-underline" href="<?php the_permalink(); ?>" >
+						 <a class="date-link no-underline" href="<?php the_permalink(); ?>" >
                <?php  if (has_post_thumbnail()) {
 								 $thumbId = get_post_thumbnail_id( get_the_ID() );
 								 $thumb_alt = get_post_meta($thumbId, 'wp_attachment_image_alt', true);
@@ -29,11 +30,11 @@
 					} ?>
 					<span class="sr-only">Read more about <?php the_title(); ?></span>
 						 </a>
-				<?php
+					<?php
 
 					et_divi_post_format_content();
-				?>
-            <div class="cat-info">
+					?>
+            <div class="date-info">
               <a class="title" href="<?php the_permalink(); ?>"><h2><?php ( ! empty(the_title('', '', false)) ? the_title() : print 'No Title'); ?></h2></a>
            <?php et_divi_post_meta(); ?>
             </div>
@@ -53,6 +54,7 @@
 				endif;
 			?>
   </main>
+
   <?php
 if (is_active_sidebar('sidebar-1')) {
 			    print '<aside id="non_divi_sidebar" class="col-lg-3">';

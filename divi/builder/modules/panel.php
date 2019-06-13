@@ -151,36 +151,6 @@ class ET_Builder_Module_Panel extends ET_Builder_CAWeb_Module {
             ),
         );
         $advanced_fields = array(
-            'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'disabled_on' => array(
-                'label'           => esc_html__('Disable on', 'et_builder'),
-                'type'            => 'multiple_checkboxes',
-                'options'         => array(
-                    'phone'   => esc_html__('Phone', 'et_builder'),
-                    'tablet'  => esc_html__('Tablet', 'et_builder'),
-                    'desktop' => esc_html__('Desktop', 'et_builder'),
-                ),
-                'additional_att'  => 'disable_on',
-                'option_category' => 'configuration',
-                'description'     => esc_html__('This will disable the module on selected devices', 'et_builder'),
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'visibility',
-            ),
         );
 
         return array_merge($general_fields, $design_fields, $advanced_fields);
@@ -205,8 +175,6 @@ class ET_Builder_Module_Panel extends ET_Builder_CAWeb_Module {
 
         $display_icon = ("on" == $use_icon ? caweb_get_icon_span($icon) : '');
 
-        $headingSize = ("none" == $panel_layout ? 'h1' : 'h2');
-
         $heading_text_color = ("none" == $panel_layout && "" != $heading_text_color ?
 						sprintf(' style="color: %1$s;"', $heading_text_color) : '');
 
@@ -219,10 +187,10 @@ class ET_Builder_Module_Panel extends ET_Builder_CAWeb_Module {
 
         $remove_overflow = ("none" == $panel_layout ? ' style="overflow: visible;"' : '');
 
-        $display_options = $show_button == "on" ? sprintf('<div class="options"%2$s><a href="%1$s" class="btn btn-default" target="_blank">Read More</a></div>', $button_link, $option_padding) : '';
+        $display_options = $show_button == "on" ? sprintf('<div class="options"%1$s><a href="%2$s" class="btn btn-default" target="_blank">Read More<span class="sr-only">Read more about %3$s</span></a></div>', $option_padding, $button_link, $title ) : '';
 
-        $display_title = ("" != $title ? sprintf('<div class="panel-heading"><%1$s%2$s>%3$s%4$s%5$s</%1$s></div>',
-				$headingSize, ( ! empty($heading_style) ? $heading_style : ''), $display_icon, $title, $display_options) : '');
+        $display_title = ("" != $title ? sprintf('<div class="panel-heading"><h2%1$s>%2$s%3$s%4$s</h2></div>',
+				( ! empty($heading_style) ? $heading_style : ''), $display_icon, $title, $display_options) : '');
 
         $output = sprintf('<div%1$s%2$s%3$s>%4$s<div class="panel-body">%5$s</div></div> <!-- .et_pb_panel -->', $this->module_id(), $class, $remove_overflow, $display_title, $content);
 
@@ -379,36 +347,6 @@ class ET_Builder_Module_Fullwidth_Panel extends ET_Builder_CAWeb_Module {
             ),
         );
         $advanced_fields = array(
-            'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'disabled_on' => array(
-                'label'           => esc_html__('Disable on', 'et_builder'),
-                'type'            => 'multiple_checkboxes',
-                'options'         => array(
-                    'phone'   => esc_html__('Phone', 'et_builder'),
-                    'tablet'  => esc_html__('Tablet', 'et_builder'),
-                    'desktop' => esc_html__('Desktop', 'et_builder'),
-                ),
-                'additional_att'  => 'disable_on',
-                'option_category' => 'configuration',
-                'description'     => esc_html__('This will disable the module on selected devices', 'et_builder'),
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'visibility',
-            ),
         );
 
         return array_merge($general_fields, $design_fields, $advanced_fields);
@@ -433,8 +371,6 @@ class ET_Builder_Module_Fullwidth_Panel extends ET_Builder_CAWeb_Module {
 
         $display_icon = ("on" == $use_icon ? caweb_get_icon_span($icon) : '');
 
-        $headingSize = ("none" == $panel_layout ? 'h1' : 'h2');
-
         $heading_text_color = ("none" == $panel_layout && "" != $heading_text_color ?
 						sprintf(' style="color: %1$s;"', $heading_text_color) : '');
 
@@ -447,10 +383,10 @@ class ET_Builder_Module_Fullwidth_Panel extends ET_Builder_CAWeb_Module {
 
         $remove_overflow = ("none" == $panel_layout ? ' style="overflow: visible;"' : '');
 
-        $display_options = $show_button == "on" ? sprintf('<div class="options"%2$s><a href="%1$s" class="btn btn-default" target="_blank">Read More</a></div>', $button_link, $option_padding) : '';
+        $display_options = $show_button == "on" ? sprintf('<div class="options"%1$s><a href="%2$s" class="btn btn-default" target="_blank">Read More<span class="sr-only">Read more about %3$s</span></a></div>', $option_padding, $button_link, $title) : '';
 
-        $display_title = ("" != $title ? sprintf('<div class="panel-heading"><%1$s%2$s>%3$s%4$s%5$s</%1$s></div>',
-				$headingSize, ( ! empty($heading_style) ? $heading_style : ''), $display_icon, $title, $display_options) : '');
+        $display_title = ("" != $title ? sprintf('<div class="panel-heading"><h2%1$s>%2$s%3$s%4$s</h2></div>',
+				( ! empty($heading_style) ? $heading_style : ''), $display_icon, $title, $display_options) : '');
 
         $output = sprintf('<div%1$s%2$s%3$s>%4$s<div class="panel-body">%5$s</div></div>', $this->module_id(), $class, $remove_overflow, $display_title, $content);
 

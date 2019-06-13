@@ -88,36 +88,6 @@ class ET_Builder_Module_Fullwidth_CA_Service_Tiles extends ET_Builder_CAWeb_Modu
         $design_fields = array();
 
         $advanced_fields = array(
-            'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'disabled_on' => array(
-                'label'     => esc_html__('Disable on', 'et_builder'),
-                'type'     	=> 'multiple_checkboxes',
-                'options'   => array(
-                    'phone'   	=> esc_html__('Phone', 'et_builder'),
-                    'tablet'  	=> esc_html__('Tablet', 'et_builder'),
-                    'desktop' 	=> esc_html__('Desktop', 'et_builder'),
-                ),
-                'additional_att'  => 'disable_on',
-                'option_category' => 'configuration',
-                'description'     => esc_html__('This will disable the module on selected devices', 'et_builder'),
-                'tab_slug'				=> 'custom_css',
-                'toggle_slug'			=> 'visibility',
-            ),
         );
 
         return array_merge($general_fields, $design_fields, $advanced_fields);
@@ -143,9 +113,14 @@ class ET_Builder_Module_Fullwidth_CA_Service_Tiles extends ET_Builder_CAWeb_Modu
             $item_image = $tiles[$i]['item_image'];
 
             if ("on" == $tiles[$i]['tile_link']) {
-                $output .= sprintf('<div tabindex="%1$s" class="service-tile service-tile-empty %2$s" data-url="%3$s" data-link-target="new" >%4$s<div class="teaser"><h4 class="title">%5$s</h4></div></div>', $i + 1, $tile_size, $tiles[$i]['tile_url'], ! empty($item_image) ? sprintf('<img src="%1$s" style="background-size: cover; width: 100%%; height: 320px;"/>', $item_image) : '', $title);
+                if( ! empty( $item_image ) ){
+                    $alt_text = caweb_get_attachment_post_meta($item_image, '_wp_attachment_image_alt');
+                    $item_image = sprintf('<img src="%1$s" alt="%2$s" style="background-size: cover; width: 100%%; height: 320px;" />', $item_image, ! empty($alt_text) ? $alt_text : ' ' );
+                }
+
+                $output .= sprintf('<div tabindex="0" class="service-tile service-tile-empty %1$s" data-url="%2$s" data-link-target="new" >%3$s<div class="teaser"><h4 class="title">%4$s</h4></div></div>', $tile_size, $tiles[$i]['tile_url'], $item_image, $title);
             } else {
-                $output .= sprintf('<div tabindex="%1$s" class="service-tile %2$s" data-tile-id="panel-%1$s" style="background-image:url(%3$s); background-size: cover;"><div class="teaser"><h4 class="title">%4$s</h4></div></div>', $i + 1, $tile_size, $item_image, $title);
+                $output .= sprintf('<div tabindex="0" class="service-tile %2$s" data-tile-id="panel-%1$s" style="background-image:url(%3$s); background-size: cover;"><div class="teaser"><h4 class="title">%4$s</h4></div></div>', $i + 1, $tile_size, $item_image, $title);
             }
         }
         for ($i = 0; $i < $tile_count; $i++) {
@@ -268,20 +243,33 @@ class ET_Builder_Module_Fullwidth_CA_Service_Tiles_Item extends ET_Builder_CAWeb
 
         $advanced_fields = array(
             'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
+                'label'           => esc_html__( 'CSS ID', 'et_builder' ),
                 'type'            => 'text',
                 'option_category' => 'configuration',
                 'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
+                'toggle_slug'     => 'classes',
             ),
             'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
+                'label'           => esc_html__( 'CSS Class', 'et_builder' ),
                 'type'            => 'text',
                 'option_category' => 'configuration',
                 'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
+                'toggle_slug'     => 'classes',
                 'option_class'    => 'et_pb_custom_css_regular',
+            ),
+            'disabled_on' => array(
+                'label'           => esc_html__( 'Disable on', 'et_builder' ),
+                'type'            => 'multiple_checkboxes',
+                'options'         => array(
+                    'phone'   => esc_html__( 'Phone', 'et_builder' ),
+                    'tablet'  => esc_html__( 'Tablet', 'et_builder' ),
+                    'desktop' => esc_html__( 'Desktop', 'et_builder' ),
+                ),
+                'additional_att'  => 'disable_on',
+                'option_category' => 'configuration',
+                'description'     => esc_html__( 'This will disable the module on selected devices', 'et_builder' ),
+                'tab_slug'        => 'custom_css',
+                'toggle_slug'     => 'visibility',
             ),
         );
 

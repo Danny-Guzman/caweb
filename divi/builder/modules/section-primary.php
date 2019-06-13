@@ -165,36 +165,6 @@ class ET_Builder_Module_CA_Section_Primary extends ET_Builder_CAWeb_Module {
         );
 
         $advanced_fields = array(
-            'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'disabled_on' => array(
-                'label'           => esc_html__('Disable on', 'et_builder'),
-                'type'            => 'multiple_checkboxes',
-                'options'         => array(
-                    'phone'   => esc_html__('Phone', 'et_builder'),
-                    'tablet'  => esc_html__('Tablet', 'et_builder'),
-                    'desktop' => esc_html__('Desktop', 'et_builder'),
-                ),
-                'additional_att'  => 'disable_on',
-                'option_category' => 'configuration',
-                'description'     => esc_html__('This will disable the module on selected devices', 'et_builder'),
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'visibility',
-            ),
         );
 
         return array_merge($general_fields, $design_fields, $advanced_fields);
@@ -222,14 +192,16 @@ class ET_Builder_Module_CA_Section_Primary extends ET_Builder_CAWeb_Module {
         $heading_text_color = ("" != $heading_text_color ? sprintf(' color: %1$s; ', $heading_text_color) : '');
 
         $display_button = ($show_more_button == "on" && $section_link != "" ?
-			sprintf('<div><a href="%1$s" class="btn btn-default" target="_blank">More Information</a></div>', esc_url($section_link)) : '');
+			sprintf('<div><a href="%1$s" class="btn btn-default" target="_blank">More Information<span class="sr-only">More information about %2$s</span></a></div>', esc_url($section_link), $section_heading) : '');
 
         if ("on" == $featured_image_button) {
             $img_class = ("on"== $slide_image_button ? ' animate-fadeInLeft ' : '');
             $img_class .= ("on" == $image_pos ? 'pull-right' : '');
 
-            $display_image = sprintf('<div class="col-md-4 col-md-offset-0 %1$s" style="%2$s">
-					<img src="%3$s" class="img-responsive" style="width: 100%%;"></div>',
+            $alt_text = caweb_get_attachment_post_meta($section_image, '_wp_attachment_image_alt');
+            $section_image = sprintf('<img src="%1$s" class="img-responsive" style="width: 100%%;" alt="%2$s" />', $section_image, $alt_text);
+
+            $display_image = sprintf('<div class="col-md-4 col-md-offset-0 %1$s" style="%2$s">%3$s</div>',
                 $img_class, ("on" == $image_pos ? 'padding-right: 0;' : 'padding-left: 0;'), $section_image);
 
             $heading_style =("" != $heading_text_color ? sprintf(' style="%1$s" ', $heading_text_color) : '');
@@ -413,36 +385,6 @@ class ET_Builder_Module_Fullwidth_CA_Section_Primary extends ET_Builder_CAWeb_Mo
         );
 
         $advanced_fields = array(
-            'module_id' => array(
-                'label'           => esc_html__('CSS ID', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'module_class' => array(
-                'label'           => esc_html__('CSS Class', 'et_builder'),
-                'type'            => 'text',
-                'option_category' => 'configuration',
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'			=> 'classes',
-                'option_class'    => 'et_pb_custom_css_regular',
-            ),
-            'disabled_on' => array(
-                'label'           => esc_html__('Disable on', 'et_builder'),
-                'type'            => 'multiple_checkboxes',
-                'options'         => array(
-                    'phone'   => esc_html__('Phone', 'et_builder'),
-                    'tablet'  => esc_html__('Tablet', 'et_builder'),
-                    'desktop' => esc_html__('Desktop', 'et_builder'),
-                ),
-                'additional_att'  => 'disable_on',
-                'option_category' => 'configuration',
-                'description'     => esc_html__('This will disable the module on selected devices', 'et_builder'),
-                'tab_slug'        => 'custom_css',
-                'toggle_slug'     => 'visibility',
-            ),
         );
 
         return array_merge($general_fields, $design_fields, $advanced_fields);
@@ -470,14 +412,16 @@ class ET_Builder_Module_Fullwidth_CA_Section_Primary extends ET_Builder_CAWeb_Mo
         $heading_text_color = ("" != $heading_text_color ? sprintf(' color: %1$s; ', $heading_text_color) : '');
 
         $display_button = ($show_more_button == "on" && $section_link != "" ?
-			sprintf('<div><a href="%1$s" class="btn btn-default" target="_blank">More Information</a></div>', esc_url($section_link)) : '');
+			sprintf('<div><a href="%1$s" class="btn btn-default" target="_blank">More Information<span class="sr-only">More information about %2$s</span></a></div>', esc_url($section_link), $section_heading) : '');
 
         if ("on" == $featured_image_button) {
             $img_class = ("on"== $slide_image_button ? ' animate-fadeInLeft ' : '');
             $img_class .= ("on" == $image_pos ? 'pull-right' : '');
 
-            $display_image = sprintf('<div class="col-md-4 col-md-offset-0 %1$s" style="%2$s">
-					<img src="%3$s" class="img-responsive" style="width: 100%%;"></div>',
+            $alt_text = caweb_get_attachment_post_meta($section_image, '_wp_attachment_image_alt');
+            $section_image = sprintf('<img src="%1$s" class="img-responsive" style="width: 100%%;" alt="%2$s" />', $section_image, $alt_text);
+
+            $display_image = sprintf('<div class="col-md-4 col-md-offset-0 %1$s" style="%2$s">%3$s</div>',
                 $img_class, ("on" == $image_pos ? 'padding-right: 0;' : 'padding-left: 0;'), $section_image);
 
             $heading_style =("" != $heading_text_color ? sprintf(' style="%1$s" ', $heading_text_color) : '');

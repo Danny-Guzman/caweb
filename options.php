@@ -12,13 +12,15 @@ function caweb_admin_menu() {
     // Remove Menus and re-add it under the newly created CAWeb Options as Navigation
     remove_submenu_page('themes.php', 'nav-menus.php');
     add_submenu_page('caweb_options', 'Navigation', 'Navigation', 'manage_options', 'nav-menus.php', '');
-
+        
     // If user is not a Network Admin
     if (is_multisite() &&  ! current_user_can('manage_network_options')) {
         // Remove Themes and Background option under Appearance menu
-		unset($submenu['themes.php'][5], $submenu['themes.php'][20], $submenu['themes.php'][21]); // Themes link
-		 // Background link
-		 // Background link
+        foreach( $submenu['themes.php'] as $m => $menu_data){
+            if( "Background" == $menu_data[0] || preg_match('/\bthemes.php\b|\bcustom-background\b/', $menu_data[2]) ){
+                unset($submenu['themes.php'][$m]);
+            }
+        }
 
 		// Remove WP-Forms Addons Menus
         remove_submenu_page('wpforms-overview', 'wpforms-addons');
@@ -124,18 +126,19 @@ function caweb_save_options($values = array(), $files = array()) {
         if ( ! isset($values['alert-status-'.$count])) {
             continue;
         }
-        $data['status'] = $values['alert-status-'.$count];
-        $data['header'] = $values['alert-header-'.$count];
-        $data['message'] = $values['alert-message-'.$count];
-        $data['page_display'] = $values['alert-display-'.$count];
-        $data['color'] = $values['alert-banner-color-'.$count];
+        $data['status'] = isset($values['alert-status-'.$count]) ? $values['alert-status-'.$count] : 'active';
+        $data['header'] = isset($values['alert-header-'.$count]) ? $values['alert-header-'.$count] : '';
+        $data['message'] = isset($values['alert-message-'.$count]) ? $values['alert-message-'.$count] : '';
+        $data['page_display'] = isset($values['alert-display-'.$count]) ? $values['alert-display-'.$count] : 'home';
+        $data['color'] = isset($values['alert-banner-color-'.$count]) ? $values['alert-banner-color-'.$count] : '#FDB81E';
         $data['button'] = isset($values['alert-read-more-'.$count]) ? $values['alert-read-more-'.$count] : '';
-        $data['url'] = $values['alert-read-more-url-'.$count];
+        $data['url'] = isset($values['alert-read-more-url-'.$count]) ? $values['alert-read-more-url-'.$count] : '';
         $data['target'] = isset($values['alert-read-more-target-'.$count]) ? $values['alert-read-more-target-'.$count] : '';
-        $data['icon'] = $values['alert-icon-'.$count];
+        $data['icon'] = isset($values['alert-icon-'.$count]) ? $values['alert-icon-'.$count] : '';
 
         $alerts[] = $data;
     }
+
     $values['caweb_alerts'] = $alerts;
 
     // Save CAWeb Options
@@ -148,7 +151,6 @@ function caweb_save_options($values = array(), $files = array()) {
         if ('caweb_external_js' == $opt) {
             $val = array_merge($val, array_diff(array_keys($jsfiles), $val));
         }
-
         update_option($opt, $val);
     }
 
@@ -347,7 +349,7 @@ function caweb_get_site_options($group = '', $special = false, $with_values = fa
 
     $caweb_general_options = array('ca_fav_ico', 'ca_site_version', 'ca_default_navigation_menu', 'ca_menu_selector_enabled',
         'ca_site_color_scheme',	'ca_frontpage_search_enabled', 'ca_sticky_navigation',
-        'ca_home_nav_link',	'ca_default_post_title_display', 'ca_default_post_date_display');
+        'ca_home_nav_link',	'ca_default_post_title_display', 'ca_default_post_date_display', 'ca_x_ua_compatibility');
 
     $caweb_utility_header_options = array('ca_contact_us_link', 'ca_geo_locator_enabled', 'ca_utility_home_icon',
         'ca_utility_link_1', 'ca_utility_link_1_name', 'ca_utility_link_1_new_window',
@@ -355,10 +357,10 @@ function caweb_get_site_options($group = '', $special = false, $with_values = fa
         'ca_utility_link_3',   'ca_utility_link_3_name', 'ca_utility_link_3_new_window',
     );
 
-    $caweb_page_header_options = array('header_ca_branding', 'header_ca_branding_alignment', 'header_ca_background');
+    $caweb_page_header_options = array('header_ca_branding', 'header_ca_branding_alt_text', 'header_ca_branding_alignment', 'header_ca_background');
 
     $caweb_google_options = array('ca_google_search_id', 'ca_google_analytic_id',
-        'ca_google_meta_id', 'ca_google_trans_enabled', 'ca_google_trans_page', 'ca_google_trans_icon');
+        'ca_google_meta_id', 'ca_google_trans_enabled', 'ca_google_trans_page', 'ca_google_trans_icon', 'ca_google_trans_page_new_window');
 
     $caweb_social_options = array('Facebook' => 'ca_social_facebook', 'Twitter' => 'ca_social_twitter',
         'Google Plus' =>  'ca_social_google_plus', 'Email' => 'ca_social_email',
@@ -451,14 +453,26 @@ function caweb_get_site_options($group = '', $special = false, $with_values = fa
 	http://asecuritysite.com/forensics/ico
  */
 function caweb_fav_icon_checker() {
+    $url = preg_replace( "/https?:\/\//", "", $_POST['icon_url'] );
     $url = $_POST['icon_url'];
+        
+    $arrContextOptions= stream_context_create( array(
+        "ssl"=>array(
+            "verify_peer"=>false,
+            "verify_peer_name"=>false,
+        ),
+    ) ); 
 
-    $handle = rawurlencode(file_get_contents($url));
-    $handle = array_splice(array_filter(explode('%', $handle)), 0, 4);
+    $handle = file_get_contents($url, false, $arrContextOptions);
+    $handle = rawurlencode($handle);
+    $handle = explode('%', $handle);
+    $handle = array_filter($handle);
+    $handle = array_splice($handle, 0, 4);
     $handle = implode("", $handle);
-
+    
     if ("00000100" == $handle) {
         print true;
+        wp_die(); // this is required to terminate immediately and return a proper response
     }
 
     print false;
