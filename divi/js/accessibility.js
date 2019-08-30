@@ -1,4 +1,5 @@
-   $ = jQuery.noConflict();
+// Last update 8/5/2019 @ 3:20pm
+$ = jQuery.noConflict();
 
    jQuery(document).ready(function() {
     
@@ -12,7 +13,7 @@
     Divi Blurb Module Accessibility 
     Retrieve all Divi Blurb Modules
     */
-    var blurb_modules = $('div.et_pb_blurb').filter(function(){ if( ! $(this).find('a').length ){ return true ; } }); 
+    var blurb_modules = $('div.et_pb_blurb'); 
 
     /* 
     Divi Tab Module Accessibility 
@@ -30,7 +31,7 @@
     Divi Button Module Accessibility 
     Retrieve all Divi Button Modules
     */
-    var button_modules = $('a').filter(function(){ return this.className.match(/\bet_pb_button_\d\b/); });
+    var button_modules = $('a.et_pb_button');
 
     /* 
     Divi Slides (Standard & Fullwidth) Accessibility 
@@ -39,13 +40,13 @@
     Post Slider (Standard & Fullwidth)
     Retrieve all Divi Slide Modules
     */
-    var slide_modules = $('div').filter(function(){ return this.className.match(/\bet_pb_slide\b/); });
+    var slide_modules = $('div.et_pb_slide');
     
     /* 
     Divi Slider Arrows Accessibility 
     Retrieve all Divi Slider Arrows
     */
-    var slider_arrows = $('div').filter(function(){ return this.className.match(/\bet-pb-slider-arrows\b/); });
+    var slider_arrows = $('div.et-pb-slider-arrows');
     
     /* 
     Divi Post Slider (Standard & Fullwidth) Accessibility 
@@ -71,7 +72,19 @@
     Divi Accessibility Plugin Adds a "Skip to Main Content" anchor tag
     Retrieve all a[href="#main-content"]
    */
-    var main_content_anchors = $('a[href="#main-content"]')
+    var main_content_anchors = $('a[href="#main-content"]');
+
+    /*
+    Divi Video Module Accessibility
+    Retrieve all Divi Video Modules
+   */
+    var video_modules = $('div.et_pb_video');
+
+    /*
+    Divi Toggle Module Accessibility
+    Retrieve all Divi Toggle Modules
+   */
+    var toggle_modules = $('div.et_pb_toggle');
 
     // Run only if there is a Blog Module on the current page
     if( blog_modules.length ){
@@ -99,16 +112,28 @@
     // Run only if there is a Blog Module on the current page
     if( blurb_modules.length ){
         blurb_modules.each(function(index, element) {
-            $(element).prepend('<a href="#"></a>');
-         });      
+			var header = $(element).find('.et_pb_module_header');
+            var header_title = header.length ?
+                     ( $(header).children('a').length ? $(header).children('a')[0].innerText : header[0].innerText ) : '';
 
-         $('.et_pb_blurb').children('a').on('focusin', function(){ 
-            $(this).parent().css('outline', "#2ea3f2 solid 2px");
-         });
-         
-         $('.et_pb_blurb').children('a').on('focusout', function(){ 
-            $(this).parent().css('outline', '0');
-         });
+            if( ! $(element).find('a').length && $(element).hasClass('et_clickable')){ 
+                $(element).prepend('<a href="#"><span class="sr-only">' + header_title + '</span></a>');
+            }else if( $(element).find('.et_pb_main_blurb_image').children('a').length ){
+                var blurb_img = $(element).find('.et_pb_main_blurb_image');
+
+                $(blurb_img).removeAttr('aria-hidden');
+                
+                $($(blurb_img).children('a')[0]).prepend('<span class="sr-only">' + header_title + '</span>');
+            }
+
+            $(element).children('a').on('focusin', function(){ 
+                $(this).parent().css('outline', "#2ea3f2 solid 2px");
+             });
+             
+             $(element).children('a').on('focusout', function(){ 
+                $(this).parent().css('outline', '0');
+             });
+         });      
     }   
 
     // Run only if there is a Tab Module on the current page
@@ -201,7 +226,12 @@
             var next_button =  $(element).find('a.et-pb-arrow-next');
 
             prev_button.addClass('no-underline');
+            prev_button.find('span').addClass('sr-only');
+            prev_button.prepend('<span class="ca-gov-icon-arrow-prev" aria-hidden="true"></span>');
+
             next_button.addClass('no-underline');
+            next_button.find('span').addClass('sr-only');
+            next_button.prepend('<span class="ca-gov-icon-arrow-next" aria-hidden="true"></span>');
             
         });      
     } 
@@ -272,5 +302,42 @@
         });      
     }
 
+    // Run only if there is a Video Module on the current page
+    if( video_modules.length  ){
+        video_modules.each(function(index, element) {
+            var frame = $(element).find('iframe');
+            frame.attr('title', 'Divi Video Module IFrame');
+            $(frame).removeAttr('frameborder');
+        });      
+    }
+
+    // Run only if there is a Video Module on the current page
+    if( toggle_modules.length  ){
+        toggle_modules.each(function(index, element) {
+            
+            $(element).off( "keydown", function(e){
+                console.log("Key Down " + e.keyCode);
+            });
+
+            $(element).off( "keypress", function(e){
+                console.log("Key Press " + e.keyCode);
+            });
+
+            $(element).off( "keyup", function(e){
+                    console.log("Key Up " + e.keyCode);
+            });
+
+            $(element).on('focusin', function(){
+                toggleExpansion(this);
+            })
+
+        });      
+
+        function toggleExpansion(ele){
+            var expanded = $(ele).hasClass('et_pb_toggle_open') ?  'true' : 'false' ;
+              
+            $(ele).attr('aria-expanded', expanded);
+        }
+    }
 
 });
