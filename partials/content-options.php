@@ -26,11 +26,14 @@ $sticky_nav_enabled = get_option('ca_sticky_navigation', false) ? ' checked="che
 $home_nav_link_enabled = get_option('ca_home_nav_link', true) ? ' checked="checked"' : '';
 $display_post_title = get_option('ca_default_post_title_display', false) ? ' checked="checked"' : '';
 $display_post_date = get_option('ca_default_post_date_display', false) ? ' checked="checked"' : '';
+$ua_compatibiliy = get_option('ca_x_ua_compatibility', false) ? ' checked="checked"' : '';
 $contact_us_link = get_option('ca_contact_us_link', '');
 $geo_locator_enabled = get_option('ca_geo_locator_enabled', false) ? ' checked="checked"' : '';
 $utility_header_home_icon = get_option('ca_utility_home_icon', true) ? 'checked="checked"' : '';
 $org_logo = get_option('header_ca_branding', '');
 $org_logo_filename = ! empty($org_logo) ? substr($org_logo, strrpos($org_logo, '/')+1) : '';
+$org_logo_alt_text = ! empty( get_option('header_ca_branding_alt_text', '') ) ? get_option('header_ca_branding_alt_text') :  caweb_get_attachment_post_meta($org_logo, '_wp_attachment_image_alt');
+
 $header_branding_alignment = get_option('header_ca_branding_alignment', 'left');
 $header_branding_background = get_option('header_ca_background', '');
 $header_branding_background_filename = ! empty($header_branding_background) ? substr($header_branding_background, strrpos($header_branding_background, '/')+1) : '';
@@ -40,6 +43,7 @@ $google_meta_id = get_option('ca_google_meta_id', '');
 $google_translate_mode = get_option('ca_google_trans_enabled', 'none');
 $google_translate_enabled = 'custom' !== $google_translate_mode ? ' class="hidden"' : '';
 $google_translate_page = get_option('ca_google_trans_page', '');
+$google_translate_new_window = get_option('ca_google_trans_page_new_window', true) ? ' checked="checked"' : '';
 $google_translate_icon = get_option('ca_google_trans_icon', 'globe');
 $ext_css = get_option('caweb_external_css', array());
 $custom_css = get_option('ca_custom_css', '');
@@ -172,10 +176,19 @@ $icons = caweb_get_icon_list(-1, '', true);
 													</td></tr>
 													<tr >
 														<th scope="row"><div class="tooltip">Display Date for Non-Divi Posts
-															<span class="tooltiptext"> If checked all non-Divi Posts will display the Posts Published Date.</span></div>
+															<span class="tooltiptext">If checked all non-Divi Posts will display the Posts Published Date.</span></div>
 														</th>
 														<td><input type="checkbox" name="ca_default_post_date_display" id="ca_default_post_date_display" <?php print $display_post_date ?>>
-														</td></tr>
+														</td>
+													</tr>
+													<tr >
+														<th scope="row"><div class="tooltip">Legacy Browser Support
+															<span class="tooltiptext">Checking this box creates accessibility errors for your site when using the IE Browser.</span></div>
+														</th>
+														<td><input type="checkbox" name="ca_x_ua_compatibility" id="ca_x_ua_compatibility" <?php print $ua_compatibiliy ?>>
+															<span style="color: red;"><?php print ! empty($ua_compatibiliy) ? 'IE 11 browser compatibility enabled. Warning: creates accessibility errors when using IE browsers.' : '' ?></span>
+														</td>
+													</tr>
 													</table>
 													<div class="extra <?php print $modern ?>">
 														<h1 class="option">Utility Header</h1>
@@ -248,7 +261,13 @@ $icons = caweb_get_icon_list(-1, '', true);
 																					<img class="header_ca_branding_option" id="header_ca_branding_img" src="<?php print $org_logo ?>"/>
 																				</td>
 																			</tr>
-																			
+																			<tr>
+																			<th scope="row"><div class="tooltip">Organization Logo-Alt Text
+																				<span class="tooltiptext">Enter alternative text for the agency logo image.</span></div></th>
+																				<td>
+																					<input type="text" name="header_ca_branding_alt_text" id="header_ca_branding_alt_text" size="75" value="<?php print $org_logo_alt_text ?>" >
+																				</td>
+																			</tr>
 																			<tr class="base <?php print $legacy ?>">
 																				<th scope="row"><div class="tooltip ">Organization Logo Alignment
 																					<span class="tooltiptext">Select the position for the agency logo.</span></div></th>
@@ -304,6 +323,10 @@ $icons = caweb_get_icon_list(-1, '', true);
 																									<tr <?php print $google_translate_enabled ?>>
 																										<th scope="row">Translate Page</th>
 																										<td><input type="text" name="ca_google_trans_page" size="60" value="<?php print $google_translate_page ?>"></td>
+																									</tr>
+																									<tr <?php print $google_translate_enabled ?>>
+																										<th scope="row">Open in New Tab</th>
+																										<td><input type="checkbox" name="ca_google_trans_page_new_window" <?php print $google_translate_new_window ?>></td>
 																									</tr>
 																									<tr <?php print $google_translate_enabled ?>>
 																										<th scope="row"><span class="dashicons dashicons-image-rotate resetIcon resetGoogleIcon"></span> Icon</th>
@@ -435,7 +458,7 @@ $icons = caweb_get_icon_list(-1, '', true);
 																														</div>
 																											
 																											<div id="alert-banners" class="<?php print 'alert-banners' == $selected_tab ? '' : 'hidden' ?>">
-																												<h1 class="option">Create Alert Banner <a class="dashicons dashicons-plus-alt" id="addAlertBanner" title="Add Alert Banner"></a></h1>
+																												<h1 class="option">Create Alert Banner <a class="dashicons dashicons-plus-alt" id="addAlertBanner" title="Add Alert Banner (Note: This feature has a known WordPress issue when using the Chrome Browser.)"></a></h1>
 																												<ul id="cawebAlerts">
 																													<?php
 
@@ -475,7 +498,8 @@ $icons = caweb_get_icon_list(-1, '', true);
 																										        $iconList .= sprintf('<li class="icon-option ca-gov-icon-%1$s%2$s" title="%1$s"></li>', $i, $i == $data['icon'] ? ' selected' : '');
 																										    }
 
-																										    printf('<div id="caweb-alert-%1$s" style="display:none;"><form id="caweb-options-form" class="caweb-alert-%1$s"><h3>Alert Settings</h3><p>Display on</p><label><input type="radio" name="alert-display-%1$s" value="home"%2$s>Home Page Only</label><label><input type="radio" name="alert-display-%1$s" value="all"%3$s>All Pages</label><p>Banner Color</p><input type="color" name="alert-banner-color-%1$s" value="%4$s"><p><label>Add Read More Button <input type="checkbox" name="alert-read-more-%1$s"%5$s class="alert-read-more"></label></p><div%6$s><p>Read More Button URL</p><input type="text" name="alert-read-more-url-%1$s" value="%7$s"><label>Open link in</label><label><input type="radio" name="alert-read-more-target-%1$s" value="_blank"%8$s>New Tab</label><label><input type="radio" name="alert-read-more-target-%1$s"%9$s>Current Tab</label></div><p>Add Icon <span class="dashicons dashicons-image-rotate resetAlertIcon"></span></p><ul id="caweb-icon-menu" class="noUpdate">%10$s<input name="alert-icon-%1$s" type="hidden" value="%11$s"></ul><a class="button button-primary ok">Ok</a><a class="button button-primary cancel">Cancel</a></form></div>', $a + 1, "home" == $data['page_display'] ? ' checked="true" data-display="true"' : '', "all" == $data['page_display'] ? ' checked="true" data-display="true"' : '', $data['color'], "on" == $data['button'] ? ' checked="true"' : '', "on" !== $data['button'] ? ' class="hidden"' : '', $data['url'], "_blank" == $data['target'] ? ' checked="true"' : '', empty($data['target']) ? ' checked="true"' : '', $iconList, $data['icon']);
+																											printf('<div id="caweb-alert-%1$s" style="display:none;"><form id="caweb-options-form" class="caweb-alert-%1$s"><h3>Alert Settings</h3><p>Display on</p><label><input type="radio" name="alert-display-%1$s" value="home"%2$s>Home Page Only</label><label><input type="radio" name="alert-display-%1$s" value="all"%3$s>All Pages</label><p>Banner Color</p><input type="color" name="alert-banner-color-%1$s" value="%4$s"><p><label>Add Read More Button <input type="checkbox" name="alert-read-more-%1$s"%5$s class="alert-read-more"></label></p><div%6$s><p>Read More Button Text</p><input type="text" name="alert-read-more-text-%1$s" value="%12$s"><p>Read More Button URL</p><input type="text" name="alert-read-more-url-%1$s" value="%7$s"><label>Open link in</label><label><input type="radio" name="alert-read-more-target-%1$s" value="_blank"%8$s>New Tab</label><label><input type="radio" name="alert-read-more-target-%1$s"%9$s>Current Tab</label></div><p>Add Icon <span class="dashicons dashicons-image-rotate resetAlertIcon"></span></p><ul id="caweb-icon-menu" class="noUpdate">%10$s<input name="alert-icon-%1$s" type="hidden" value="%11$s"></ul><a class="button button-primary ok">Ok</a><a class="button button-primary cancel">Cancel</a></form></div>', 
+																											$a + 1, "home" == $data['page_display'] ? ' checked="true" data-display="true"' : '', "all" == $data['page_display'] ? ' checked="true" data-display="true"' : '', $data['color'], "on" == $data['button'] ? ' checked="true"' : '', "on" !== $data['button'] ? ' class="hidden"' : '', $data['url'], "_blank" == $data['target'] ? ' checked="true"' : '', empty($data['target']) ? ' checked="true"' : '', $iconList, $data['icon'] , isset($data['text']) ? $data['text'] : 'More Information');
 																										}
 																										?>
 																									</div>

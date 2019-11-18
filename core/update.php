@@ -112,8 +112,9 @@ if ( ! class_exists('CAWeb_Theme_Update')) {
             if ( ! is_wp_error($payload) && wp_remote_retrieve_response_code($payload) == 200) {
                 $payload = json_decode(wp_remote_retrieve_body($payload));
 
-                //  ($payload->tag_name >  $this->current_version)
-                if ( ! empty($payload) && version_compare($payload->tag_name, $this->current_version, '>')) {
+                // version compare doesn't compare correctly 1.0.0a is less than 1.0.0 and that is incorrect 
+                // version_compare($payload->tag_name, $this->current_version, '>')
+                if ( ! empty($payload) && $payload->tag_name >  $this->current_version ) {
                     $obj = array();
                     $obj['new_version'] = $payload->tag_name;
 
@@ -177,6 +178,11 @@ if ( ! class_exists('CAWeb_Theme_Update')) {
                     rename(sprintf('%1$s/css/external/', CAWebAbsPath),
 							sprintf('%1$s/caweb_external_css/', wp_upload_dir()['basedir']));
                 }
+                // move any external site js if external js directory exists
+                if (file_exists(sprintf('%1$s/js/external/', CAWebAbsPath))) {
+                    rename(sprintf('%1$s/js/external/', CAWebAbsPath),
+                            sprintf('%1$s/caweb_external_js/', wp_upload_dir()['basedir']));
+                }
 
                 // Delete existing transient
                 delete_site_transient($this->transient_name);
@@ -210,6 +216,11 @@ if ( ! class_exists('CAWeb_Theme_Update')) {
             if (file_exists(sprintf('%1$s/caweb_external_css/', wp_upload_dir()['basedir']))) {
                 rename(sprintf('%1$s/caweb_external_css/', wp_upload_dir()['basedir']),
 			 				sprintf('%1$s/css/external/', CAWebAbsPath));
+            }
+            // move any external site js existed move it back
+            if (file_exists(sprintf('%1$s/caweb_external_js/', wp_upload_dir()['basedir']))) {
+                rename(sprintf('%1$s/caweb_external_js/', wp_upload_dir()['basedir']),
+			 				sprintf('%1$s/js/external/', CAWebAbsPath));
             }
         }
         function caweb_update_available() {
