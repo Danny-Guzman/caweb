@@ -10,14 +10,15 @@
 
 module.exports = {
 	// CA State Template Options
-	templateVer: '5', // Default CA State Template Version
+	templateVer: '5', // Minimum CA State Template Version
+	availableVers: ['4', '5', '5.5'], // Available CA State Template Versions
 
 	// Asset Directories
-	SCSSAssetDir: 'assets/scss/', // CAWeb CSS 
+	SCSSAssetDir: 'assets/scss/', // Main SCSS 
+	JSAssetDir: 'assets/js/', // Main JS 
 	themeCSSAssetDir: 'assets/css/caweb/', // CAWeb CSS 
 	templateCSSAssetDir: 'assets/css/cagov/', // State Template CSS 
 	frontendCSS: [ // Frontend CSS
-		'assets/css/cagov/cagov.font-only.css', 
 		'assets/scss/frontend.scss',
 	], 
 	adminCSS:[ // WP Backend Admin CSS
@@ -38,14 +39,13 @@ module.exports = {
 	],
 	frontendJS: [ // Common JS 
 		'assets/js/caweb/google/*.js',
-		//'assets/js/caweb/geolocator.js', Geolocator not functioning
 		'assets/js/caweb/AutoTracker.js',
-		'assets/js/cagov/cagov.core.js',
+	],  
+	a11yJS:[ // Accessibility JS
 		'assets/js/a11y/plugins/*.js',
 		'assets/js/a11y/divi/*.js',
 		'assets/js/a11y/*.js',
-		'assets/js/caweb/custom.js',
-	],  
+	],
 	themeCustomizer: [ // Theme Customizer JS 
 		'assets/js/wp/theme-customizer.js'
 	],

@@ -73,45 +73,53 @@ gulp.task('admin-css', parameterized( async function (_) {
 	}
 }));
 
+
 /*
-	CAWeb Styles (State Template v5)
+	CAWeb Frontend Styles 
 */
-gulp.task('v5-css', parameterized( async function (_) {
+gulp.task('frontend-css', parameterized( async function (_) {
 	var noFlags = undefined === _.params.length || _.params.all;
-
-	if ( _.params.prod ) {
-		buildVersionStyles(true, '5');
-	}
-
-	if ( _.params.dev ) {
-		buildVersionStyles(false, '5');
-	}
-
-	if( noFlags ){
-		buildVersionStyles(false, '5');
-		buildVersionStyles(true, '5');
-	}
+	var version = undefined !== _.params.ver ? [ _.params.ver ] : config.availableVers;
+	
+	version.forEach(function(v){
+		if ( _.params.prod ) {
+			buildFrontEndStyles(true, v);
+		}
+	
+		if ( _.params.dev ) {
+			buildFrontEndStyles(false, v);
+		}
+	
+		if( noFlags ){
+			buildFrontEndStyles(false, v);
+			buildFrontEndStyles(true, v);
+		}
+	});
 
 }));
 
 /*
-	CAWeb Styles (State Template v4 Legacy Version)
+	CAWeb CDN Styles 
 */
-gulp.task('v4-css', parameterized( async function (_) {
+gulp.task('cdn-css', parameterized( async function (_) {
 	var noFlags = undefined === _.params.length || _.params.all;
+	var version = undefined !== _.params.ver ? [ _.params.ver ] : config.availableVers;
+	
+	version.forEach(function(v){
+		if ( _.params.prod ) {
+			buildCDNStyles(true, v);
+		}
+	
+		if ( _.params.dev ) {
+			buildCDNStyles(false, v);
+		}
+	
+		if( noFlags ){
+			buildCDNStyles(false, v);
+			buildCDNStyles(true, v);
+		}
+	});
 
-	if ( _.params.prod ) {
-		buildVersionStyles(true, '4');
-	}
-
-	if ( _.params.dev ) {
-		buildVersionStyles(false, '4');
-	}
-
-	if( noFlags ){
-		buildVersionStyles(false, '4');
-		buildVersionStyles(true, '4');
-	}
 }));
 
 /*
@@ -155,6 +163,75 @@ gulp.task('admin-js', parameterized( async function (_) {
 }));
 
 /*
+	CAWeb JavaScript
+*/
+gulp.task('caweb-js', parameterized( async function (_) {
+	var noFlags = undefined === _.params.length || _.params.all;
+	var version = undefined !== _.params.ver ? [ _.params.ver ] : config.availableVers;
+	
+	version.forEach(function(v){
+		if ( _.params.prod ) {
+			buildCAWebJS(true, v);
+		}
+	
+		if ( _.params.dev ) {
+			buildCAWebJS(false, v);
+		}
+	
+		if( noFlags ){
+			buildCAWebJS(true, v);
+			buildCAWebJS(false, v);
+		}
+	});
+	
+}));
+
+/*
+	CAWeb FrontEnd JavaScript
+*/
+gulp.task('frontend-js', parameterized( async function (_) {
+	var noFlags = undefined === _.params.length || _.params.all;
+	var version = undefined !== _.params.ver ? [ _.params.ver ] : config.availableVers;
+	
+	version.forEach(function(v){
+		if ( _.params.prod ) {
+			buildFrontEndJS(true, v);
+		}
+	
+		if ( _.params.dev ) {
+			buildFrontEndJS(false, v);
+		}
+	
+		if( noFlags ){
+			buildFrontEndJS(true, v);
+			buildFrontEndJS(false, v);
+		}
+	});
+	
+}));
+
+
+/*
+	CAWeb A11y JavaScript
+*/
+gulp.task('a11y-js', parameterized( async function (_) {
+	var noFlags = undefined === _.params.length || _.params.all;
+
+	if ( _.params.prod ) {
+		buildA11yJS(true);
+	}
+
+	if ( _.params.dev ) {
+		buildA11yJS(false);
+	}
+
+	if( noFlags ){
+		buildA11yJS(true);
+		buildA11yJS(false);
+	}
+}));
+
+/*
 	CAWeb BootStrap Admin Styles
 */
 gulp.task('bootstrap-js', parameterized( async function (_) {
@@ -171,26 +248,6 @@ gulp.task('bootstrap-js', parameterized( async function (_) {
 	if( noFlags ){
 		buildBootStrapJS(true);
 		buildBootStrapJS(false);
-	}
-}));
-
-/*
-	CAWeb FrontEnd JavaScript
-*/
-gulp.task('frontend-js', parameterized( async function (_) {
-	var noFlags = undefined === _.params.length || _.params.all;
-
-	if ( _.params.prod ) {
-		buildFrontEndJS(true);
-	}
-
-	if ( _.params.dev ) {
-		buildFrontEndJS(false);
-	}
-
-	if( noFlags ){
-		buildFrontEndJS(true);
-		buildFrontEndJS(false);
 	}
 }));
 
@@ -236,31 +293,37 @@ gulp.task('beautify', parameterized(async function(_) {
 */
 gulp.task('build', parameterized(async function(_){
 	var noFlags = ! Object.getOwnPropertyNames(_.params).length || undefined !== _.params.all;
-	var versionNum = undefined !== _.params.ver ? _.params.ver : false;
+	var version = undefined !== _.params.ver ? [ _.params.ver ] : config.availableVers;
 
 	if ( _.params.prod ) {
 		// Build Admin Styles
 		buildAdminStyles(true);
-
-		// Build Admin Bootstrap Styles
-		buildBootStrapStyles(true);
-
-		// Build Version Styles
-		if( versionNum ){
-			buildVersionStyles(true, versionNum);
-		}else{
-			buildVersionStyles(true, '4');
-			buildVersionStyles(true, '5');
-		}
-
+		
 		// Build Admin JS
 		buildAdminJS(true);
+
+		version.forEach(function(v){
+			// Build Frontend Styles
+			buildFrontEndStyles(true, v);
+
+			// Build CDN Related Asset Styles
+			buildCDNStyles(true, v);
+			
+			// Build CAWeb JS
+			buildCAWebJS(true, v);
+		});
+
+		// Build FrontEnd JS
+		buildFrontEndJS(true);
+
+		// Build Bootstrap Styles
+		buildBootStrapStyles(true);
 
 		// Build Admin Bootstrap JS
 		buildBootStrapJS(true);
 
-		// Build Frontend JS
-		buildFrontEndJS(true);
+		// Build A11y JS
+		buildA11yJS(true);
 
 		// Build Theme Customizer JS
 		buildThemeCustomizerJS(true);
@@ -270,29 +333,36 @@ gulp.task('build', parameterized(async function(_){
 	if ( _.params.dev ) {
 		// Build Admin Styles
 		buildAdminStyles(false);
-
-		// Build Admin Bootstrap Styles
-		buildBootStrapStyles(false);
 		
-		// Build Version Styles
-		if( versionNum ){
-			buildVersionStyles(false, versionNum);
-		}else{
-			buildVersionStyles(false, '4');
-			buildVersionStyles(false, '5');
-		}
-
 		// Build Admin JS
 		buildAdminJS(false);
+
+		version.forEach(function(v){
+			// Build Frontend Styles
+			buildFrontEndStyles(false, v);
+
+			// Build CDN Related Asset Styles
+			buildCDNStyles(false, v);
+			
+			// Build CAWeb JS
+			buildCAWebJS(false, v);
+		});
+
+		// Build FrontEnd JS
+		buildFrontEndJS(false);
+
+		// Build Bootstrap Styles
+		buildBootStrapStyles(false);
 
 		// Build Admin Bootstrap JS
 		buildBootStrapJS(false);
 
-		// Build Frontend JS
-		buildFrontEndJS(false);
+		// Build A11y JS
+		buildA11yJS(false);
 
 		// Build Theme Customizer JS
 		buildThemeCustomizerJS(false);
+
 
 	}
 
@@ -300,34 +370,40 @@ gulp.task('build', parameterized(async function(_){
 		// Build Admin Styles
 		buildAdminStyles(true);
 		buildAdminStyles(false);
-
-		// Build Admin Bootstrap Styles
-		buildBootStrapStyles(true);
-		buildBootStrapStyles(false);
 		
-		// Build Version Styles
-		if( versionNum ){
-			buildVersionStyles(true, versionNum);
-			buildVersionStyles(false, versionNum);
-		}else{
-			buildVersionStyles(true, '5');
-			buildVersionStyles(false, '5');
-
-			buildVersionStyles(true, '4');
-			buildVersionStyles(false, '4');
-		}
-
 		// Build Admin JS
 		buildAdminJS(true);
 		buildAdminJS(false);
+
+		version.forEach(function(v){
+			// Build Frontend Styles
+			buildFrontEndStyles(true, v);
+			buildFrontEndStyles(false, v);
+
+			// Build CDN Related Asset Styles
+			buildCDNStyles(true, v);
+			buildCDNStyles(false, v);
+			
+			// Build CAWeb JS
+			buildCAWebJS(true, v);
+			buildCAWebJS(false, v);
+		});
+
+		// Build FrontEnd JS
+		buildFrontEndJS(true);
+		buildFrontEndJS(false);
+
+		// Build Bootstrap Styles
+		buildBootStrapStyles(true);
+		buildBootStrapStyles(false);
 
 		// Build Admin Bootstrap JS
 		buildBootStrapJS(true);
 		buildBootStrapJS(false);
 
-		// Build Frontend JS
-		buildFrontEndJS(true);
-		buildFrontEndJS(false);
+		// Build A11y JS
+		buildA11yJS(true);
+		buildA11yJS(false);
 
 		// Build Theme Customizer JS
 		buildThemeCustomizerJS(true);
@@ -358,26 +434,7 @@ async function buildAdminStyles( min = false){
 		.pipe(gulp.dest('./css/'));
 }
 
-async function buildBootStrapStyles( min = false ){
-	var buildOutputStyle = min ? 'compressed' : 'expanded';
-	var minified = min ? '.min' : '';
-
-	if( ! config.adminBootStrapCSS.length )
-		return;
-
-	return gulp.src(config.adminBootStrapCSS)
-		.pipe(
-			sass({
-				outputStyle: buildOutputStyle,
-			})
-		)
-		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
-		.pipe(concat('bootstrap' + minified + '.css')) // compiled file
-		.pipe( notify({ title: '✅  CAWeb Admin Bootstrap Styles', message: '<%= file.relative %> was created successfully.', onLast: true }) )
-		.pipe(gulp.dest('./css/'));
-}
-
-async function buildVersionStyles( min = false, ver = config.templateVer){
+async function buildFrontEndStyles( min = false, ver = config.templateVer){
 	var buildOutputStyle = min ? 'compressed' : 'expanded';
 	var minified = min ? '.min' : '';
 	var versionDir = config.templateCSSAssetDir + 'version' + ver;
@@ -385,9 +442,11 @@ async function buildVersionStyles( min = false, ver = config.templateVer){
 	var colors = fs.readdirSync(versionColorschemesDir);
 
 	colors.forEach(function(e){
-		var f = [versionDir + '/cagov.core.css', versionColorschemesDir + e];
+		var f = [versionDir + '/cagov.core.css', 
+				versionColorschemesDir + e, 
+				config.templateCSSAssetDir + 'cagov.font-only.css'];
 		f = f.concat( config.frontendCSS );
-		f = f.concat( versionDir + '/custom.css' );
+		f = f.concat( config.SCSSAssetDir + 'cagov/version' + ver + '/custom.scss' );
 
 		if( ! f.length )
 			return;
@@ -406,6 +465,62 @@ async function buildVersionStyles( min = false, ver = config.templateVer){
 			.pipe(concat(fileName )) // compiled file
 			.pipe(gulp.dest('./css/'));
 	});
+}
+
+async function buildCDNStyles( min = false, ver = config.templateVer ){
+	var buildOutputStyle = min ? 'compressed' : 'expanded';
+	var minified = min ? '.min' : '';
+	var versionDir = config.SCSSAssetDir + 'cagov/version' + ver;
+	
+	var f = config.frontendCSS.concat( versionDir + '/custom.scss' );
+
+	if( ! f.length )
+		return;
+
+	return gulp.src(f)
+		.pipe(
+			sass({
+				outputStyle: buildOutputStyle,
+			})
+		)
+		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
+		.pipe(concat('cdn-v' + ver + minified + '.css')) // compiled file
+		.pipe(gulp.dest('./css/'));
+
+}
+
+async function buildA11yJS( min = false){
+	var minified = min ? '.min' : '';
+	
+	let js = gulp.src(config.a11yJS)
+		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
+		.pipe(concat('a11y' + minified + '.js')) // compiled file
+		.pipe( notify({ title: '✅  CAWeb A11y JavaScript', message: '<%= file.relative %> was created successfully.', onLast: true }) );
+
+	if( min ){
+		js = js.pipe(uglify());
+	}
+
+	return js.pipe(gulp.dest('./js/'));
+}
+
+async function buildBootStrapStyles( min = false ){
+	var buildOutputStyle = min ? 'compressed' : 'expanded';
+	var minified = min ? '.min' : '';
+
+	if( ! config.adminBootStrapCSS.length )
+		return;
+
+	return gulp.src(config.adminBootStrapCSS)
+		.pipe(
+			sass({
+				outputStyle: buildOutputStyle,
+			})
+		)
+		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
+		.pipe(concat('bootstrap' + minified + '.css')) // compiled file
+		.pipe( notify({ title: '✅  CAWeb Admin Bootstrap Styles', message: '<%= file.relative %> was created successfully.', onLast: true }) )
+		.pipe(gulp.dest('./css/'));
 }
 
 async function buildAdminJS( min = false){
@@ -446,16 +561,39 @@ async function buildBootStrapJS( min = false ){
 	return js.pipe(gulp.dest('./js/'));
 }
 
-async function buildFrontEndJS( min = false){
+async function buildCAWebJS( min = false, ver = config.templateVer){
 	var minified = min ? '.min' : '';
+	var versionDir = config.JSAssetDir + 'cagov/version' + ver;
+	var f = config.frontendJS.concat( 
+		[versionDir + '/cagov.core.js', 
+		versionDir + '/custom.js'], 
+		config.a11yJS);
 
+	if( ! f.length )
+		return;
+
+	let js = gulp.src(f)
+		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
+		.pipe(concat('caweb-v' + ver + minified + '.js')) // compiled file
+		.pipe( notify({ title: '✅  CAWeb JavaScript', message: '<%= file.relative %> was created successfully.', onLast: true }) );
+
+	if( min ){
+		js = js.pipe(uglify());
+	}
+
+	return js.pipe(gulp.dest('./js/'));
+}
+
+async function buildFrontEndJS( min = false ){
+	var minified = min ? '.min' : '';
+	
 	if( ! config.frontendJS.length )
 		return;
 
 	let js = gulp.src(config.frontendJS)
 		.pipe( lineec() ) // Consistent Line Endings for non UNIX systems.
 		.pipe(concat('frontend' + minified + '.js')) // compiled file
-		.pipe( notify({ title: '✅  CAWeb Front End JavaScript', message: '<%= file.relative %> was created successfully.', onLast: true }) );
+		.pipe( notify({ title: '✅  CAWeb FrontEnd JavaScript', message: '<%= file.relative %> was created successfully.', onLast: true }) );
 
 	if( min ){
 		js = js.pipe(uglify());
@@ -496,12 +634,32 @@ async function buildThemeCustomizerJS( min = false){
 
 }
 
-//
 // DEV (Development Output)
-//
-gulp.task('dev', parameterized.series('v5-css --dev', 'v4-css --dev', 'admin-css --dev', 'admin-js --dev', 'frontend-js --dev', 'customizer-js --dev', 'bootstrap-css --dev', 'bootstrap-js --dev' ) );
+gulp.task('dev', parameterized.series(
+	'admin-css --dev', 
+	'frontend-css --dev', 
+	'cdn-css --dev', 
+	'bootstrap-css --dev', 
+	'admin-js --dev', 
+	'frontend-js --dev', 
+	'a11y-js --dev', 
+	'bootstrap-js --dev', 
+	'customizer-js --dev'
+	) 
+);
 
 // PROD (Minified Output)
-gulp.task('prod', parameterized.series('v5-css --prod', 'v4-css --prod', 'admin-css --prod', 'admin-js --prod', 'frontend-js --prod', 'customizer-js --prod', 'bootstrap-css --prod', 'bootstrap-js --prod') );
+gulp.task('prod', parameterized.series(
+	'admin-css --prod', 
+	'frontend-css --prod', 
+	'cdn-css --prod', 
+	'bootstrap-css --prod', 
+	'admin-js --prod', 
+	'frontend-js --prod', 
+	'a11y-js --prod', 
+	'bootstrap-js --prod',
+	'customizer-js --prod',
+	) 
+);
 
 //gulp.task('build', parameterized.series('dev', 'prod') );

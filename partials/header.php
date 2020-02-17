@@ -7,7 +7,7 @@
 
 global $post;
 $caweb_ver          = caweb_get_page_version( get_the_ID() );
-$caweb_fixed_header = ( 5 === $caweb_ver && get_option( 'ca_sticky_navigation' ) ? ' fixed' : '' );
+$caweb_fixed_header = ( 5 <= $caweb_ver && get_option( 'ca_sticky_navigation' ) ? ' fixed' : '' );
 $caweb_color        = get_option( 'ca_site_color_scheme', 'oceanside' );
 $caweb_schemes      = caweb_color_schemes( caweb_get_page_version( get_the_ID() ), 'filename' );
 $caweb_colorscheme  = isset( $caweb_schemes[ $caweb_color ] ) ? $caweb_color : 'oceanside';
@@ -34,7 +34,7 @@ $caweb_google_trans_icon    = get_option( 'ca_google_trans_icon', '' );
 	<?php
 
 		/* Version 5.0 Specific */
-	if ( 5 === caweb_get_page_version( get_the_ID() ) ) {
+	if ( 5 <= caweb_get_page_version( get_the_ID() ) ) {
 
 		/* Alerts */
 		require_once( 'content/alerts.php' );
@@ -42,11 +42,6 @@ $caweb_google_trans_icon    = get_option( 'ca_google_trans_icon', '' );
 		/* Include Utility Header */
 		require_once( 'content/utility-header.php' );
 
-		/* Location Bar */
-		require_once( 'content/bar-location.php' );
-
-		/* Settings Bar */
-		require_once( 'content/bar-settings.php' );
 	}
 
 	/* Include Branding */
