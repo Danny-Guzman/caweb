@@ -48,14 +48,14 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 			$collapse = $this->is_expanded ? '' : ' show';
 			$collapse_icon = $this->is_expanded ? ' dashicons-arrow-right' : '';
 
-			$main_input = sprintf( '<input type="hidden" name="%1$s" id="%1$s"/>', $this->id );
+			$main_input = sprintf( '<input type="hidden" name="%1$s" id="%1$s" data-customize-setting-link="%1$s" />', $this->id );
 			$add_alert = sprintf('<a data-target="caweb-toggle-alert-%1$s" class="text-decoration-none text-reset caweb-toggle-alert">%2$s <span class="text-secondary align-baseline dashicons dashicons-arrow-down%3$s"></span></a>', $this->alert_id, $this->header, $collapse_icon );
 			$alert_status = sprintf('<input type="checkbox" name="alert-status-%1$s"%2$s%3$s>', 
 				$this->alert_id,
 				null !== $this->active ? ' data-toggle="toggle" data-onstyle="success" data-size="sm"' : '', 
 				null === $this->active || in_array( $this->active, array('on', 'active'), true ) ? ' checked="checked"' : ''
 			);
-			$remove_button = '<button class="caweb-remove-alert btn btn-danger btn-sm">Remove</button>';
+			$remove_button = sprintf( '<button data-alert="%1$s" class="caweb-remove-alert btn btn-danger btn-sm">Remove</button>', $this->id);
 			$main_options = "$main_input$add_alert$alert_status$remove_button";
 
 			$main_div = sprintf( '<div id="caweb-toggle-alert-%1$s" class="collapse%2$s">%3$s%4$s%5$s%6$s%7$s%8$s</div>', 
@@ -74,29 +74,38 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 
 		private function render_alert_banner_header(){
 			$value = ! empty( $this->header ) ? sprintf(' value="%1$s"', $this->header ) : '';
-			return sprintf('<div id="customize-control-alert-header-%1$s"><label for="alert-header-%1$s" class="customize-control-title">Title</label><input type="text" placeholder="Label" id="alert-header-%1$s" name="alert-header-%1$s"%2$s/></div>', $this->alert_id, $value );
+			$label = sprintf('<label for="alert-header-%1$s" class="customize-control-title">Title</label>', $this->alert_id );
+			$input = sprintf('<input data-alert="%1$s" type="text" placeholder="Label" id="alert-header-%2$s" name="alert-header-%2$s"%3$s/>', $this->id, $this->alert_id, $value );
+
+			return sprintf('<div>%1$s%2$s</div>', $label, $input );
 		}
 
 		private function render_alert_banner_message(){
-			return sprintf('<div><label for="alert-message-%1$s" class="customize-control-title">Message</label><textarea id="alert-message-%1$s" name="alert-message-%1$s" class="w-100">%2$s</textarea></div>', $this->alert_id, $this->message );
+			$label = sprintf( '<label for="alert-message-%1$s" class="customize-control-title">Message</label>', $this->alert_id );
+			$textarea = sprintf('<textarea data-alert="%1$s" id="alert-message-%2$s" name="alert-message-%2$s" class="w-100">%3$s</textarea>', $this->id, $this->alert_id, $this->message );
+
+			return sprintf('<div>%1$s%2$s</div>', $label, $textarea );
 		}
 
 		private function render_alert_banner_display_on(){
-			$home_page = sprintf( '<input id="alert-display-home-%1$s" name="alert-display-%1$s" type="radio" value="home"%2$s/><label for="">Home Page Only</label>', $this->alert_id, 'home' === $this->display_on ? ' checked="checked"' : '' );
-			$all_pages = sprintf( '<input id="alert-display-all-%1$s" name="alert-display-%1$s" type="radio" value="all"%2$s/><label for="">All Pages</label>', $this->alert_id, 'all' === $this->display_on ? ' checked="checked"' : '' );
+			$home_page = sprintf( '<input data-alert="%1$s" id="alert-display-home-%2$s" name="alert-display-%2$s" type="radio" value="home"%3$s/><label for="alert-display-home-%2$s">Home Page Only</label>', $this->id, $this->alert_id, 'home' === $this->display_on ? ' checked="checked"' : '' );
+			$all_pages = sprintf( '<input data-alert="%1$s" id="alert-display-all-%2$s" name="alert-display-%2$s" type="radio" value="all"%3$s/><label for="alert-display-all-%2$s">All Pages</label>', $this->id, $this->alert_id, 'all' === $this->display_on ? ' checked="checked"' : '' );
 
 			return sprintf('<div role="radiogroup"><span class="customize-control-title">Display On</span>%1$s%2$s</div>', $home_page, $all_pages );
 		}
 
 		private function render_alert_banner_color(){
-			return sprintf('<div><label for="alert-banner-color-%1$s" class="customize-control-title">Banner Color</label><input class="w-25" type="color" id="alert-banner-color-%1$s" name="alert-banner-color-%1$s" value="%2$s"/></div>', $this->alert_id, $this->banner_color );
+			$label = sprintf('<label for="alert-banner-color-%1$s" class="customize-control-title">Banner Color</label>', $this->alert_id );
+			$input = sprintf('<input data-alert="%1$s" class="w-25" type="color" id="alert-banner-color-%2$s" name="alert-banner-color-%2$s" value="%3$s"/>', $this->id, $this->alert_id, $this->banner_color );
+			
+			return sprintf('<div>%1$s%2$s</div>', $label, $input );
 		}
 
 		private function render_alert_banner_read_more(){
-			$read_more = sprintf( '<div><a href="#alert-read-more-options-%1$s" data-toggle="collapse"><input id="alert-read-more-%1$s" name="alert-read-more-%1$s" type="checkbox"%2$s/></a><label class="d-inline customize-control-title" for="alert-read-more-%1$s">Read More Button</label></div>', $this->alert_id, $this->read_more ? ' checked="checked"' : '' );
-			$read_more_text = sprintf('<div><label for="alert-read-more-text-%1$s" class="customize-control-title">Read More Button Text</label><input type="text" id="alert-read-more-text-%1$s" name="alert-read-more-text-%1$s" value="%2$s" /></div>', $this->alert_id, $this->read_more_text );
-			$read_more_url = sprintf('<div><label for="alert-read-more-url-%1$s" class="customize-control-title">Read More Button URL</label><input type="text" id="alert-read-more-url-%1$s" name="alert-read-more-url-%1$s" value="%2$s" /></div>', $this->alert_id, $this->read_more_url );
-			$open_in_new_tab = sprintf('<div><input type="checkbox" id="alert-read-more-target-%1$s" name="alert-read-more-target-%1$s"%2$s/><label for="alert-read-more-target-%1$s" class="d-inline customize-control-title">Open Link in New Tab</label></div>', $this->alert_id, $this->read_more_target ? ' checked="checked"' : '' );
+			$read_more = sprintf( '<div><input id="alert-read-more-%1$s" name="alert-read-more-%1$s" class="toggle-read-more-options" type="checkbox" data-alert="%2$s"%3$s/><label class="d-inline customize-control-title" for="alert-read-more-%1$s">Read More Button</label></div>', $this->alert_id, $this->id, $this->read_more ? ' checked="checked"' : '' );
+			$read_more_text = sprintf('<div><label for="alert-read-more-text-%1$s" class="customize-control-title">Read More Button Text</label><input type="text" id="alert-read-more-text-%1$s" name="alert-read-more-text-%1$s" value="%2$s" data-alert="%3$s" /></div>', $this->alert_id, $this->read_more_text, $this->id );
+			$read_more_url = sprintf('<div><label for="alert-read-more-url-%1$s" class="customize-control-title">Read More Button URL</label><input type="text" id="alert-read-more-url-%1$s" name="alert-read-more-url-%1$s" value="%2$s" data-alert="%3$s"/></div>', $this->alert_id, $this->read_more_url, $this->id );
+			$open_in_new_tab = sprintf('<div><input type="checkbox" id="alert-read-more-target-%1$s" name="alert-read-more-target-%1$s" data-alert="%2$s"%3$s/><label for="alert-read-more-target-%1$s" class="d-inline customize-control-title">Open Link in New Tab</label></div>', $this->alert_id, $this->id, $this->read_more_target ? ' checked="checked"' : '' );
 
 			return sprintf( '%1$s<div id="alert-read-more-options-%2$s" class="collapse%3$s">%4$s%5$s%6$s</div>', 
 				$read_more, 
@@ -115,6 +124,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 					'name'         => 'alert-icon-' . $this->alert_id,
 					'header'       => 'Icon',
 					'header_class' => array( 'customize-control-title', 'd-inline' ),
+					'input_attrs' => array('data-alert' => $this->id ),
 				)
 			);
 		}

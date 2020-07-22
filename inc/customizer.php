@@ -46,11 +46,11 @@ function caweb_customize_preview_init() {
 function caweb_customize_controls_enqueue_scripts() {
 
 	$bootstrap_css = caweb_get_min_file( '/css/bootstrap.css' );
-	$customizer_css = caweb_get_min_file( '/css/theme-customizer.css' );
+	//$customizer_css = caweb_get_min_file( '/css/theme-customizer.css' );
 
 	wp_enqueue_style( 'caweb-bootstrap-styles', $bootstrap_css, array(), CAWEB_VERSION );
 	wp_enqueue_style( 'caweb-boot1-toggle', 'https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css', array(), CAWEB_VERSION );
-	wp_enqueue_style( 'caweb-customizer-styles', $customizer_css, array(), CAWEB_VERSION );
+	//wp_enqueue_style( 'caweb-customizer-styles', $customizer_css, array(), CAWEB_VERSION );
 
 	wp_register_script( 'caweb-customizer-controls-script', caweb_get_min_file( '/js/theme-customizer-controls.js', 'js' ), array(), CAWEB_VERSION, true );
 	
@@ -151,7 +151,7 @@ function caweb_customize_register( $wp_customize ) {
 	//caweb_customize_register_custom_file_settings( $wp_customize, 'js' );
 
 	// Alert Banners
-	//caweb_customize_register_alert_banner_settings( $wp_customize );
+	caweb_customize_register_alert_banner_settings( $wp_customize );
 }
 
 /**

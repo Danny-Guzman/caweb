@@ -463,6 +463,8 @@ function caweb_allowed_html( $exclude = array(), $form = false ) {
 	// https://gitbrent.github.io/bootstrap4-toggle/#api.
 	$data = array(
 		'data-toggle' => array(),
+		'data-parent' => array(),
+		'data-alert' => array(), // used for Alert Banners in the Customizer
 		'data-target' => array(),
 		'data-on' => array(),
 		'data-off' => array(),
