@@ -984,27 +984,35 @@ function caweb_customize_register_alert_banner_settings( $wp_customize ){
 
 	foreach( $caweb_alerts as $a => $alert ){
 		$a++;
+		$default = array(
+			'alert' => $a,
+			'header' => $alert['header'],
+			'message' => $alert['message'],
+			'display_on' => $alert['page_display'],
+			'banner_color' => $alert['color'],
+			'read_more' => $alert['button'],
+			'read_more_text' => $alert['text'],
+			'read_more_url' => $alert['url'],
+			'read_more_target' => $alert['target'],
+			'icon' => $alert['icon'],
+			'status' => $alert['status'],
+		);
 		// Alert Setting
-		$wp_customize->add_setting( "caweb_alert_banner_$a", array( 'type' => 'option', 'transport' => 'postMessage' ) );
+		$wp_customize->add_setting( 
+			"caweb_alert_banner_$a", 
+			array( 
+				'type' => 'option', 
+				'transport' => 'postMessage',
+				'default' => json_encode( $default )
+			)
+		);
 
 		// Alert Control
 		$wp_customize->add_control(
 			new CAWeb_Customize_Alert_Banner_Control(
 				$wp_customize,
 				"caweb_alert_banner_$a",
-				array(
-					'section'    => 'caweb_alert_banners',
-					'header' => $alert['header'],
-					'message' => $alert['message'],
-					'display_on' => $alert['page_display'],
-					'banner_color' => $alert['color'],
-					'read_more' => $alert['button'],
-					'read_more_text' => $alert['text'],
-					'read_more_url' => $alert['url'],
-					'read_more_target' => $alert['target'],
-					'icon' => $alert['icon'],
-					'active' => $alert['status'],
-				)
+				array_merge( array( 'section'    => 'caweb_alert_banners'), $default )
 			)
 		);
 		

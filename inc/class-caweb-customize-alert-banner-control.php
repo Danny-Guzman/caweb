@@ -21,7 +21,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 		public $read_more_url = '';
 		public $read_more_target = true;
 		public $icon = 'important';
-		public $active = null; 
+		public $status = null; 
 		public $alert_id = -1;
 		public $type = 'alert_banner';
 
@@ -54,8 +54,8 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 			$alert_status = sprintf('<input type="checkbox" data-alert="%1$s" id="alert-status-%2$s" name="alert-status-%2$s"%3$s%4$s>', 
 				$this->id,
 				$this->alert_id,
-				null !== $this->active ? ' data-toggle="toggle" data-onstyle="success" data-size="sm"' : '', 
-				null === $this->active || in_array( $this->active, array('on', 'active'), true ) ? ' checked="checked"' : ''
+				null !== $this->status ? ' data-toggle="toggle" data-onstyle="success" data-size="sm"' : '', 
+				null === $this->status || in_array( $this->status, array('on', 'active'), true ) ? ' checked="checked"' : ''
 			);
 			$remove_button = sprintf( '<button data-alert="%1$s" class="caweb-remove-alert btn btn-danger btn-sm">Remove</button>', $this->id);
 			$main_options = "$main_input$add_alert$alert_status$remove_button";
@@ -91,7 +91,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 			$this->json['read_more_url'] = $this->read_more_url;
 			$this->json['read_more_target'] = $this->read_more_target;
 			$this->json['icon'] = $this->icon;
-			$this->json['active'] = $this->active;
+			$this->json['status'] = $this->status;
 			$this->json['alert_id'] = $this->alert_id;
 		}
 		
