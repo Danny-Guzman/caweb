@@ -1,17 +1,19 @@
 jQuery( document ).ready( function($) {
-	wp.customize( 'caweb_alert_banner_0', function( value ) {
-		value.bind( function( newval ) {
-			var obj = JSON.parse( newval );
+	
+	wp.customize( 'caweb_add_alert_banner', function( alert_id ) {
+		alert_id.bind( function( id ) {
+			console.log('caweb_alert_banner_' + id );
+		});
+	});
 
-			if( obj.remove ){
-				$('header .alert-' + obj.alert ).remove();
-				return false;
-			}else{
-				console.log( obj );
-			}
+	wp.customize( 'caweb_alert_banner_1', function( value ) {
+		value.bind( function( newval ) {
+			console.log( newval );
 		});
 	});
 });
+
+
 jQuery( document ).ready( function($) {
 	// Utility Header Contact Us Link
 	wp.customize( 'ca_contact_us_link', function( value ) {

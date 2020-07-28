@@ -23,7 +23,8 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 		public $icon = 'important';
 		public $active = null; 
 		public $alert_id = -1;
-		
+		public $type = 'alert_banner';
+
 		/**
 		 * __construct
 		 *
@@ -37,7 +38,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 
 			$this->alert_id = str_replace( 'caweb_alert_banner_', '', $this->id);
 		}
-		
+
 		/**
 		 * Render an Alert Banner.
 		 *
@@ -45,12 +46,13 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 		 * @return void
 		 */
 		public function render_content() {
-			$collapse = $this->is_expanded ? '' : ' show';
-			$collapse_icon = $this->is_expanded ? ' dashicons-arrow-right' : '';
+			$collapse = $this->is_expanded ? ' show' : '';
+			$collapse_icon = $this->is_expanded ? '' : ' dashicons-arrow-right';
 
 			$main_input = sprintf( '<input type="hidden" name="%1$s" id="%1$s" data-customize-setting-link="%1$s" />', $this->id );
 			$add_alert = sprintf('<a data-target="caweb-toggle-alert-%1$s" class="text-decoration-none text-reset caweb-toggle-alert">%2$s <span class="text-secondary align-baseline dashicons dashicons-arrow-down%3$s"></span></a>', $this->alert_id, $this->header, $collapse_icon );
-			$alert_status = sprintf('<input type="checkbox" name="alert-status-%1$s"%2$s%3$s>', 
+			$alert_status = sprintf('<input type="checkbox" data-alert="%1$s" id="alert-status-%2$s" name="alert-status-%2$s"%3$s%4$s>', 
+				$this->id,
 				$this->alert_id,
 				null !== $this->active ? ' data-toggle="toggle" data-onstyle="success" data-size="sm"' : '', 
 				null === $this->active || in_array( $this->active, array('on', 'active'), true ) ? ' checked="checked"' : ''
@@ -72,6 +74,44 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 			printf( '%1$s%2$s', $main_options, $main_div );
 		}
 
+		/**
+		 * Refresh the parameters passed to the JavaScript via JSON.
+		 *
+		 * @link https://developer.wordpress.org/reference/classes/wp_customize_control/to_json/
+		 * @return void
+		 */
+		public function to_json() {
+			parent::to_json();
+			$this->json['header'] = $this->header;
+			$this->json['message'] = $this->message;
+			$this->json['display_on'] = $this->display_on;
+			$this->json['banner_color'] = $this->banner_color;
+			$this->json['read_more'] = $this->read_more;
+			$this->json['read_more_text'] = $this->read_more_text;
+			$this->json['read_more_url'] = $this->read_more_url;
+			$this->json['read_more_target'] = $this->read_more_target;
+			$this->json['icon'] = $this->icon;
+			$this->json['active'] = $this->active;
+			$this->json['alert_id'] = $this->alert_id;
+		}
+		
+		/**
+		 * An Underscore (JS) template for this control’s content (but not its container).
+		 *
+		 * @link https://developer.wordpress.org/reference/classes/wp_customize_control/content_template/ 
+		 * @return void
+		 */
+		public function content_template(){
+			?>
+
+				<input type="text" name="caweb_alert_banner_1" id="caweb_alert_banner_1" data-customize-setting-link="caweb_alert_banner_1" />
+				<div>
+					<label>Title</label>
+					<input data-alert="caweb_alert_banner_1" type="text" id="alert-header-1" name="alert-header-1" />
+				</div>
+			<?php
+		}
+		
 		private function render_alert_banner_header(){
 			$value = ! empty( $this->header ) ? sprintf(' value="%1$s"', $this->header ) : '';
 			$label = sprintf('<label for="alert-header-%1$s" class="customize-control-title">Title</label>', $this->alert_id );

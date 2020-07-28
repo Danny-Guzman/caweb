@@ -11,6 +11,8 @@ add_action( 'customize_preview_init', 'caweb_customize_preview_init' );
 add_action( 'customize_controls_enqueue_scripts', 'caweb_customize_controls_enqueue_scripts' );
 add_action( 'customize_controls_print_styles', 'caweb_customize_controls_print_styles' );
 add_action( 'customize_register', 'caweb_customize_register' );
+add_filter( 'customize_changeset_save_data', 'caweb_customize_changeset_save_data', 10, 2 );
+add_filter( 'customize_save_response', 'caweb_customize_save_response', 10, 2 );
 
 /**
  * CAWeb Customizer Preview Init
@@ -944,7 +946,8 @@ function caweb_customize_register_alert_banner_settings( $wp_customize ){
 		'caweb_add_alert_banner',
 		array(
 			'type'    => 'option',
-			'default' => 'New Banner'
+			'default' => 'New Banner',
+			'transport' => 'postMessage'
 		)
 	);
 
@@ -980,6 +983,7 @@ function caweb_customize_register_alert_banner_settings( $wp_customize ){
 	$caweb_alerts = get_option( 'caweb_alerts', array() );
 
 	foreach( $caweb_alerts as $a => $alert ){
+		$a++;
 		// Alert Setting
 		$wp_customize->add_setting( "caweb_alert_banner_$a", array( 'type' => 'option', 'transport' => 'postMessage' ) );
 
@@ -1050,4 +1054,82 @@ function caweb_customizer_google_trans_custom_option( $customizer ) {
  */
 function caweb_sanitize_customizer_checkbox( $checked ) {
 	return ( isset( $checked ) && true === $checked ) ? '1' : '0';
+}
+
+/**
+ * caweb_customize_save_response
+ *
+ * @param  array $response Additional information passed back to the saved event on wp.customize.
+ * @param  WP_Customize_Manager $instance WP_Customize_Manager instance.
+ * @return void
+ */
+function caweb_customize_changeset_save_data( $response, $instance ){
+	$alert_edits = array_filter( $response , function($i){ return false !== strpos( $i, 'caweb_alert_banner_' ); }, ARRAY_FILTER_USE_KEY );
+
+	if( ! empty( $alert_edits ) ){
+		caweb_customize_save_alert_banner_response( $alert_edits );
+	}
+	return $response;
+}
+
+function caweb_customize_save_response($response, $instance){
+	$alert_edits = isset( $response['setting_validities'] ) ? array_filter( $response['setting_validities'] , function($i){ return false !== strpos( $i, 'caweb_alert_banner_' ); }, ARRAY_FILTER_USE_KEY ) : array();
+	
+	caweb_customize_clear_alert_banner_options( array_keys( $alert_edits ) );
+
+	return $response;
+}
+
+function caweb_customize_clear_alert_banner_options( $alerts ){
+	$alert_opts = array(
+		'caweb_alert_banner_',
+		'alert-header-',
+		'alert-message-',
+		'alert-display-',
+		'alert-banner-color-',
+		'alert-read-more-',
+		'alert-read-more-text-',
+		'alert-read-more-url-',
+		'alert-read-more-target-',
+		'alert-icon-',
+	);
+	foreach( $alerts as $a ){
+		$id = str_replace( 'caweb_alert_banner_', '', $a );
+
+		// delete all associated options
+		foreach( $alert_opts as $opt ){
+			delete_option( $opt . $id );
+		}
+		
+	}
+	delete_option('caweb_alert_banner_sample');
+	delete_option('caweb_add_alert_banner');
+}
+
+function caweb_customize_save_alert_banner_response( $alert_edits ){
+	$alerts = array();
+
+	foreach( $alert_edits as $a => $data ){
+		$id = str_replace( 'caweb_alert_banner_', '', $a );
+		$values = json_decode( $data['value'] );
+
+		if( ! isset( $values->remove ) || ! $values->remove ){
+			$alert_data = array(
+				'status'       => $values->status ? 'on' : '',
+				'header'       => $values->header,
+				'message'      => $values->message,
+				'page_display' => $values->display_on,
+				'color'        => $values->banner_color,
+				'button'       => $values->read_more ? 'on' : '',
+				'url'          => $values->read_more_url,
+				'text'         => $values->read_more_text,
+				'target'       => $values->read_more_target ? 'on' : '',
+				'icon'         => $values->icon,
+			);
+
+			$alerts[] = $alert_data;
+		}
+	}
+
+	update_option( 'caweb_alerts', $alerts );
 }
