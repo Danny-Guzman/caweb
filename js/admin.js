@@ -125,8 +125,10 @@
 /* CAWeb Alert Option Javascript */
 jQuery(document).ready(function($) {
 	
-	$( "#caweb-alert-banners" ).sortable();
-	$( "#caweb-alert-banners" ).disableSelection()
+	if( $( "#caweb-alert-banners" ).length ){
+		$( "#caweb-alert-banners" ).sortable();
+		$( "#caweb-alert-banners" ).disableSelection()
+	}
 
 	$('.remove-alert').click(function(e){ removeAlertFunc(this);});
 	$('#add-alert').click( function(e){ e.preventDefault(); addAlert();});
@@ -601,8 +603,10 @@ jQuery(document).ready(function($) {
     Custom CSS/JS
   */
  
-  $( "#uploaded-css, #uploaded-js" ).sortable();
-  $( "#uploaded-css, #uploaded-js" ).disableSelection();
+  if( $( "#uploaded-css, #uploaded-js" ).length ){
+	$( "#uploaded-css, #uploaded-js" ).sortable();
+	$( "#uploaded-css, #uploaded-js" ).disableSelection();
+  }
 
   // Remove Uploaded CSS/JS
   $('.remove-css, .remove-js').click(function(e){
@@ -726,6 +730,18 @@ jQuery(document).ready(function($) {
     
   });
 
+  /* New Row */
+  $(document).on('click', 'div .new-row', function(){
+    var menu_id = $(this).attr('id').substr(0, $(this).attr('id').indexOf('_') );
+    var border = $('#menu-item-settings-' + menu_id + ' .flexmega-border');
+
+    if( $(this).is(':checked') ){
+      $(border).removeClass('hidden');
+    }else{
+      $(border).addClass('hidden');
+    }
+  });
+
   /* Item Menu Editing */
   $(document).on('DOMSubtreeModified', '#menu-to-edit', function() {
     
@@ -749,6 +765,8 @@ jQuery(document).ready(function($) {
     var mega_menu_images = $('#menu-item-settings-' + menu_id + ' .mega-menu-images');
     var unit_selector = $('#menu-item-settings-' + menu_id + ' .unit-size-selector');
     var unit_size = $(unit_selector).val();
+    var flex_border = $('#menu-item-settings-' + menu_id + ' .flexmega-border');
+    var flex_row = $('#menu-item-settings-' + menu_id + ' .flexmega-row');
 
     /*
     if the menu item is a top level menu item
@@ -761,16 +779,28 @@ jQuery(document).ready(function($) {
       // Show Icon Selector
       $(icon_selector).removeClass('hidden');
 
-      // Hide Nav Media Images, Unit Size Selector, Description
+      // Hide Nav Media Images, Unit Size Selector, Description, FlexBorder
       $(media_image).addClass('hidden');
       $(unit_selector).parent().addClass('hidden');
       $(desc).addClass('hidden-field');
+      $(flex_border).addClass('hidden');
+      $(flex_row).addClass('hidden');
+      
     }else{
       // Hide Mega Menu Options
       $(mega_menu_images).addClass('hidden');
      
       // Show Unit Selector
       $(unit_selector).parent().removeClass('hidden');
+
+      // Show Row and FlexBorder
+      $(flex_row).removeClass('hidden');
+
+      if( $(flex_row).find('input').is(':checked') ){
+        $(flex_border).removeClass('hidden');
+      }else{
+        $(flex_border).addClass('hidden');
+      }
 
       if( 'unit1' !== unit_size ){
         // Hide Description
@@ -839,12 +869,12 @@ jQuery(document).ready(function($) {
 	});
 
   $('.menu-list li a').on('click', function(e){
-	$(this).parent().parent().find('li').each(function(i, ele){
-		$(ele).removeClass('selected');
-	})
+    $(this).parent().parent().find('li').each(function(i, ele){
+      $(ele).removeClass('selected');
+    })
 
-	$(this).parent().addClass('selected');
-	$('input[name="tab_selected"]').val($(this).attr('href').replace('#', ''));
+    $(this).parent().addClass('selected');
+    $('input[name="tab_selected"]').val($(this).attr('href').replace('#', ''));
   });
 
   // Reset Fav Icon
@@ -866,7 +896,7 @@ jQuery(document).ready(function($) {
     // if theres no Google Search ID
     if( !this.value.trim() ){
       front_search_option.addClass('invisible');
-    }else if(5 <= site_version){
+    }else{
       front_search_option.removeClass('invisible');
     }
   });
@@ -883,6 +913,23 @@ jQuery(document).ready(function($) {
     }	
   });
 
+  // If Google Tag Manager Preview approved, disable Analytics iD
+  $('#ca_google_tag_manager_approved').on('change', function(e){
+      if( this.checked ){
+        $('#ca_google_analytic_id').attr('readonly', true);
+        $('#ca_google_analytic_id').parent().addClass('hidden');
+      }else{
+        $('#ca_google_analytic_id').attr('readonly', false);
+        $('#ca_google_analytic_id').parent().removeClass('hidden');
+      }
+  });
+  // If no Tag Manager ID unapprove Preview
+  $('#ca_google_tag_manager_id').on('input',function(e){
+    // if theres no Tage Manager ID
+    if( !this.value.trim() ){
+		$('#ca_google_tag_manager_approved').bootstrapToggle('off');
+    }
+  });
   // If Google Translate is set to Custom, show extra options
   $('input[name^="ca_google_trans_enabled"]').click(function(){
     if( 'ca_google_trans_enabled_custom' !== $(this).attr('id') ){

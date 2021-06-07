@@ -3,7 +3,7 @@
  * CAWeb Post List Module (Standard)
  *
  * @todo Remove do_action('caweb_post_list_module_clear_cache') ref line 59.
- * @package CAWeb Module Extension
+ * @package CAWebModuleExtension
  */
 
 if ( ! class_exists( 'ET_Builder_CAWeb_Module' ) ) {
@@ -161,10 +161,14 @@ class CAWeb_Module_Post_List extends ET_Builder_CAWeb_Module {
 			),
 			'include_tags' => array(
 				'label'            => esc_html__( 'Tags', 'et_builder' ),
-				'renderer'         => 'et_builder_include_tags_option',
+				'type'             => 'categories',
 				'option_category'  => 'basic_option',
+				'post_type'        => 'post',
+				'taxonomy_name'    => 'post_tag',
 				'renderer_options' => array(
-					'use_terms' => false,
+					'use_terms'  => true,
+					'term_name'  => 'post_tag',
+					'field_name' => 'et_pb_include_tags',
 				),
 				'description'      => esc_html__( 'Choose which tags you would like to include in the list.', 'et_builder' ),
 				'show_if'          => array( 'all_tags_button' => 'off' ),
@@ -194,11 +198,7 @@ class CAWeb_Module_Post_List extends ET_Builder_CAWeb_Module {
 				'label'             => esc_html__( 'Title Size', 'et_builder' ),
 				'type'              => 'select',
 				'option_category'   => 'configuration',
-				'options'           => array(
-					'h-1' => esc_html__( 'H1 - Large', 'et_builder' ),
-					'h-2' => esc_html__( 'H2 - Medium', 'et_builder' ),
-					'h-3' => esc_html__( 'H3 - Small', 'et_builder' ),
-				),
+				'options'           => $this->caweb_get_text_sizes( array( 'p', 'h6' ) ),
 				'description'       => esc_html__( 'Select the size for the title of this module.', 'et_builder' ),
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'header',
@@ -282,13 +282,8 @@ class CAWeb_Module_Post_List extends ET_Builder_CAWeb_Module {
 		setlocale( LC_MONETARY, 'en_US.UTF-8' );
 
 		if ( ! empty( $list_title ) ) {
-			if ( 'h-1' === $title_size ) {
-				$list_title = sprintf( '<h1>%1$s</h1>', $list_title );
-			} elseif ( 'h-2' === $title_size ) {
-				$list_title = sprintf( '<h2>%1$s</h2>', $list_title );
-			} elseif ( 'h-3' === $title_size ) {
-				$list_title = sprintf( '<h3>%1$s</h3>', $list_title );
-			}
+			$title_size = str_replace( '-', '', $title_size );
+			$list_title = "<$title_size>$list_title</$title_size>";
 		}
 
 		$faqs   = 'faqs-list' === $style ? true : false;
@@ -569,7 +564,7 @@ class CAWeb_Module_Post_List extends ET_Builder_CAWeb_Module {
 		$pub = ( ! empty( $p_handler->exam_published_date ) ?
 				sprintf( '<div class="published">Published: <time>%1$s</time></div>', gmdate( 'M j, Y', strtotime( $p_handler->exam_published_date ) ) ) : '' );
 
-		$filing_date = isset( $p_handler->exam_final_filing_date_chooser ) && 'off' == $p_handler->exam_final_filing_date_chooser ?
+		$filing_date = isset( $p_handler->exam_final_filing_date_chooser ) && 'off' === $p_handler->exam_final_filing_date_chooser ?
 		sprintf( '<div class="filing-date">Final Filing Date: <time>%1$s</time></div>', ! empty( $p_handler->exam_final_filing_date ) ? $p_handler->exam_final_filing_date : 'Until Filled' ) :
 		sprintf( '<div class="filing-date">Final Filing Date: <time>%1$s</time></div>', gmdate( 'n/j/Y', strtotime( $p_handler->exam_final_filing_date_picker ) ) );
 

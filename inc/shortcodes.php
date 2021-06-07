@@ -9,6 +9,7 @@
 add_shortcode( 'caweb_google_translate', 'caweb_google_translate_func' );
 add_shortcode( 'caweb_icon_menu', 'caweb_icon_menu' );
 
+//phpcs:disable
 /*
 The following shortcodes are not yet ready
 add_shortcode('caweb_panel', 'caweb_panel_func');
@@ -16,6 +17,7 @@ add_shortcode('caweb_section', 'caweb_section_func');
 add_shortcode('caweb_carousel', 'caweb_carousel_func');
 add_shortcode('caweb_slide_item', 'caweb_slide_func');
 */
+//phpcs:enable
 
 /**
  * Renders CAWeb Google Translator
@@ -35,11 +37,11 @@ function caweb_google_translate_func() {
  */
 function caweb_icon_menu( $atts ) {
 	/* Available Props */
-	$selected = isset( $atts['select'] ) ? $atts['select'] : '';
-	$input    = isset( $atts['name'] ) ? $atts['name'] : '';
+	$selected     = isset( $atts['select'] ) ? $atts['select'] : '';
+	$input        = isset( $atts['name'] ) ? $atts['name'] : '';
 	$header_class = isset( $atts['header_class'] ) ? is_array( $atts['header_class'] ) ? implode( ' ', $atts['header_class'] ) : $atts['header_class'] : '';
 	$header_class = ! empty( $header_class ) ? " class=\"$header_class\"" : '';
-	$label    = isset( $atts['header'] ) && $atts['header'] ? sprintf( ' <label%1$s%2$s>%3$s</label>', ! empty( $input ) ? " for=\"$input\"" : '', $header_class, $atts['header'] ) : '';
+	$label        = isset( $atts['header'] ) && $atts['header'] ? sprintf( ' <label%1$s%2$s>%3$s</label>', ! empty( $input ) ? " for=\"$input\"" : '', $header_class, $atts['header'] ) : '';
 
 	$header = sprintf( '<div class="caweb-icon-menu-header my-2"><span class="dashicons dashicons-image-rotate align-middle mb-1 resetIcon"></span>%1$s</div>', $label );
 	$input  = ! empty( $input ) ? sprintf( '<input type="hidden" id="%1$s" name="%1$s" value="%2$s" >', $input, $selected ) : '';
@@ -63,7 +65,7 @@ function caweb_icon_menu( $atts ) {
  *                     $atts['heading_icon'] = Panel Icon for the Heading, can be numerical index or name of icon from caweb_get_icon_list().
  *                     $atts['button_url'] = Adds a button url to the Panel Heading
  *                     $atts['button_text'] = 'Read More' button text unless set.
- * @param  string/html $content Content to render inside Panel body.
+ * @param  string|html $content Content to render inside Panel body.
  *
  * @return html
  */
@@ -112,7 +114,7 @@ function caweb_panel_func( $atts, $content = '' ) {
  *
  * @param  array       $atts Array of Settings for the Section.
  *                     $atts['layout'] = section variations none, default, standout, standout highlight, overstated, and understated.
- * @param  string/html $content Content to render inside Section body.
+ * @param  string|html $content Content to render inside Section body.
  *
  * @return html
  */
@@ -137,7 +139,7 @@ function caweb_section_func( $atts, $content = '' ) {
  * CAWeb Carousel
  *
  * @param  array       $atts Array of Settings for the Carousel.
- * @param  string/html $content Content to render inside Carousel body.
+ * @param  string|html $content Content to render inside Carousel body.
  *
  * @return html
  */
@@ -162,7 +164,7 @@ function caweb_carousel_func( $atts, $content = '' ) {
  * CAWeb Slide
  *
  * @param  array       $atts Array of Settings for the Slide.
- * @param  string/html $content Content to render inside Slide body.
+ * @param  string|html $content Content to render inside Slide body.
  *
  * @return html
  */
