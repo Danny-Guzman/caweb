@@ -12,6 +12,7 @@ define( 'CAWEB_ABSPATH', get_stylesheet_directory() );
 define( 'CAWEB_URI', get_stylesheet_directory_uri() );
 define( 'CAWEB_VERSION', wp_get_theme( 'CAWeb' )->get( 'Version' ) );
 define( 'CAWEB_EXTENSION', 'caweb-module-extension' );
+define( 'CAWEB_GUTENBERG_EXTENSION', 'caweb-gutenberg-extension' );
 define( 'CAWEB_DIVI_VERSION', wp_get_theme( 'Divi' )->get( 'Version' ) );
 define( 'CAWEB_CA_STATE_PORTAL_CDN_URL', 'https://california.azureedge.net/cdt/CAgovPortal' );
 define( 'CAWEB_EXTERNAL_DIR', sprintf( '%1$s/%2$s-ext', WP_CONTENT_DIR, strtolower( wp_get_theme()->stylesheet ) ) );
@@ -69,6 +70,7 @@ if ( is_child_theme() && 'Divi' === wp_get_theme()->get( 'Template' ) ) {
 } else {
 	include CAWEB_ABSPATH . '/divi/functions.php';
 }
+include sprintf( '%1$s/gutenberg/extension/%2$s.php', CAWEB_ABSPATH, CAWEB_GUTENBERG_EXTENSION );
 
 /*
 -------------------------------------
