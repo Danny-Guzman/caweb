@@ -1,0 +1,14 @@
+{
+  "name": "caweb-gutenberg-extension",
+  "version": "1.0.0",
+  "description": "CAWeb Gutenberg Blocks",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build"
+  },
+  "author": "Danny Guzman",
+  "license": "ISC",
+  "devDependencies": {
+    "@wordpress/scripts": "^16.1.2"
+  }
+}
